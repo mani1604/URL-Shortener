@@ -6,7 +6,7 @@ from pathlib import Path
 
 app = Flask(__name__)
 sh = UrlShortener()
-domain = 'http://localhost:8080/'
+domain = 'http://localhost:5000/'
 start_id = 1000000000
 url_data_file = 'data.json'
 if Path(url_data_file).exists():
@@ -74,4 +74,4 @@ def get_id():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
