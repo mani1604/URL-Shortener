@@ -1,12 +1,15 @@
 from flask import Flask, request, redirect
 from shorten import UrlShortener
+from utils import write_to_json, read_json
+from pathlib import Path
 
 
 app = Flask(__name__)
-url_data = dict()
 sh = UrlShortener()
 domain = 'http://localhost:8080/'
 start_id = 1000000000
+url_data = dict()
+url_data_file = 'data.json'
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -21,6 +24,7 @@ def get_long_url():
             short_url = sh.shorten(url_id)
             short_url = domain + short_url
             url_data[long_url] = [url_id, short_url]
+            write_to_json(url_data, url_data_file)
     else:
         short_url = ''
         url_id = ''
@@ -43,10 +47,11 @@ def url_redirect(short_url):
     url_id = sh.un_shorten(short_url)
     short_url = domain + short_url
     data_to_check = [url_id, short_url]
-    for data in url_data:
+    url_data_from_file = read_json(url_data_file)
+    for data in url_data_from_file:
         print(data_to_check)
-        print(url_data[data])
-        if data_to_check == url_data[data]:
+        print(url_data_from_file[data])
+        if data_to_check == url_data_from_file[data]:
             actual_url = data
             break
 
@@ -57,7 +62,12 @@ def url_redirect(short_url):
 
 
 def get_id():
-    end_id = start_id + len(url_data)
+    if Path(url_data_file).exists():
+        url_data_from_file = read_json(url_data_file)
+    else:
+        url_data_from_file = {}
+
+    end_id = start_id + len(url_data_from_file)
 
     return end_id
 
