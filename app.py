@@ -8,8 +8,11 @@ app = Flask(__name__)
 sh = UrlShortener()
 domain = 'http://localhost:8080/'
 start_id = 1000000000
-url_data = dict()
 url_data_file = 'data.json'
+if Path(url_data_file).exists():
+    url_data = read_json(url_data_file)
+else:
+    url_data = dict()
 
 
 @app.route("/", methods=['GET', 'POST'])
@@ -49,8 +52,6 @@ def url_redirect(short_url):
     data_to_check = [url_id, short_url]
     url_data_from_file = read_json(url_data_file)
     for data in url_data_from_file:
-        print(data_to_check)
-        print(url_data_from_file[data])
         if data_to_check == url_data_from_file[data]:
             actual_url = data
             break
